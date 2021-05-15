@@ -6,11 +6,11 @@ interface MapNode {
 };
 
 const map_costs: number[][] = [
-    [5, 10, 10, 30, 10],
-    [11, 10, 90, 70, 10],
-    [40, 60, 100, 10, 10],
-    [90, 5, 90, 10, 5],
-    [5, 10, 40, 90, 5],
+    [5, 10, 10, 10, 100],
+    [10, 100, 100, 50, 100],
+    [10, 10, 10, 10, 50],
+    [100, 100, 100, 100, 10],
+    [100, 100, 100, 100, 100],
 ];
 
 const get_node = (x: number, y: number, map: number[][]): MapNode => {
@@ -26,7 +26,7 @@ const get_neighbours = (parent_node: MapNode, map: number[][]): MapNode[] => {
 
     for (let yy = y-1; yy < y+2; yy++) {        
         for (let xx = x-1; xx < x+2; xx++) {
-            if (yy != y && xx != x) {
+            if (!(yy == y && xx == x)) {
                 const nod = get_node(xx, yy, map);
                 if (nod != null) {
                     nod.trail = [...parent_node.trail, parent_node];
@@ -99,10 +99,26 @@ const find_path = (target: MapNode, list: MapNode[], map: number[][]): MapNode =
         list = sort_node_list(list);
         visited.push(current);
         current = list[0];
-        console.log(visited);
-        
     }
     return current;
+}
+
+const print_result = (result: MapNode, map: number[][]) => {
+    for (let y = 0; y < map.length; y++) {
+        let line = '';
+        for (let x = 0; x < map[0].length; x++) {
+            let found = false;
+            for (let i = 0; i < result.trail.length; i++) {
+                if (result.trail[i].x == x && result.trail[i].y == y) {
+                    found = true;
+                    break;
+                }
+            }
+            if(found) line += 'X ';
+            else line += '. ';
+        }
+        console.log(line);
+    }
 }
 
 const target: MapNode = {
@@ -114,4 +130,4 @@ const target: MapNode = {
 
 const find_result = find_path(target, [get_node(0, 0, map_costs)], map_costs);
 console.log('result');
-console.log(find_result);
+print_result(find_result, map_costs);
