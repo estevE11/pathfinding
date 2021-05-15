@@ -23,9 +23,10 @@ const get_neighbours = (parent_node: MapNode, map: number[][]): MapNode[] => {
     let res: MapNode[] = [];
     const x = parent_node.x;
     const y = parent_node.y;
+
     for (let yy = y-1; yy < y+2; yy++) {        
         for (let xx = x-1; xx < x+2; xx++) {
-            if (yy != xx) {
+            if (yy != y && xx != x) {
                 const nod = get_node(xx, yy, map);
                 if (nod != null) {
                     nod.trail = [...parent_node.trail, parent_node];
@@ -38,14 +39,26 @@ const get_neighbours = (parent_node: MapNode, map: number[][]): MapNode[] => {
     return res;
 }
 
-const add_nodes_to_list = (list: MapNode[], nodes: MapNode[]): MapNode[] => {
+const add_nodes_to_list = (list: MapNode[], nodes: MapNode[], visited: MapNode[]): MapNode[] => {
     let missing_nodes: MapNode[] = [];
     for (let i = 0; i < nodes.length; i++) {
         let found = false;
         for (let j = 0; j < list.length; j++) {
-            if (nodes[i].x == list[j].x && nodes[i].y == list[j].y) found = true;
+            if (nodes[i].x == list[j].x && nodes[i].y == list[j].y) {
+                if (list[j].cost > nodes[i].cost) found = false;
+                else found = true;
+            }
         }
-        if (!found) missing_nodes.push(nodes[i]);
+        if (!found) {
+            let can_insert = true;
+            for (let j = 0; j < visited.length; j++) {
+                if (nodes[i].x == visited[j].x && nodes[i].y == visited[j].y) {
+                    can_insert = false;
+                    break;
+                }
+            }
+            if(can_insert) missing_nodes.push(nodes[i]);
+        }
     }
     list.push(...missing_nodes);
     return list;
@@ -75,16 +88,19 @@ const sort_node_list = (list: MapNode[]): MapNode[] => {
     return res;
 }
 
+// Afegir array de nodes estudiats
 const find_path = (target: MapNode, list: MapNode[], map: number[][]): MapNode => {
-    //console.log(list);
     let current = list[0];
+    let visited: MapNode[] = [];
     while (!(current.x == target.x && current.y == target.y)) {
         const curr_neighbours: MapNode[] = get_neighbours(current, map);
         list = delete_node_from_list(list, current);
-        list = add_nodes_to_list(list, curr_neighbours);
+        list = add_nodes_to_list(list, curr_neighbours, visited);
         list = sort_node_list(list);
+        visited.push(current);
         current = list[0];
-        console.log(`(${current.x}, ${current.y})`);
+        console.log(visited);
+        
     }
     return current;
 }
@@ -97,4 +113,5 @@ const target: MapNode = {
 };
 
 const find_result = find_path(target, [get_node(0, 0, map_costs)], map_costs);
+console.log('result');
 console.log(find_result);
