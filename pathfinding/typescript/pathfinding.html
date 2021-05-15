@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TS Pathfinding</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+    <script src="pathfinding.js"></script>
+</head>
+<body>
+    <div class="grid"></div>
+    <label for="customRange1" class="form-label">Cost</label>
+    <input type="range" class="form-range" id="cost_slider" min="0" max="100" onchange="slider_handler()" oninput="slider_handler()">
+    <span id="cost_slider_val"></span>
+    <br>
+    <button onclick="find()">FIND PATH</button>
+    <script>
+        let map = [
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0]
+        ];
+
+        let tile_selected = [0, 0];
+
+        const create_grid = () => {
+            let grid = '';
+            for(let y = 0; y < map.length; y++) {
+                let row = '<div class"row">';
+                for(let x = 0; x < map[0].length; x++) {
+                    row += '<div class="col tile' + x + '-' + y + '" onclick="select_tile(' + x + ', ' + y + ')" style="background-color: rgba(0, 0, 0, ' + map[y][x]/100 + ');"></div>';
+                }
+                row += '</div>';
+                grid += row;
+            }
+            $('.grid').html(grid);
+        }
+
+        const edit_tile = (x, y, val) => {
+            map[y][x] = val;
+            $('.tile'+x+'-'+y).css('background-color', 'rgba(0, 0, 0, ' + map[y][x]/100 + ')');
+            find();
+        }
+
+        const select_tile = (x, y) => {
+            tile_selected = [x, y];
+            $('.col').removeClass('selected');
+            $('.tile'+x+'-'+y).addClass('selected');
+            $('#cost_slider').val(map[y][x]);
+            $('#cost_slider_val').html(map[y][x]);
+        }
+
+        const slider_handler = () => {
+            const slider_val = $('#cost_slider').val();
+            $('#cost_slider_val').html(slider_val);
+            edit_tile(tile_selected[0], tile_selected[1], slider_val);
+        }
+
+        const find = () => {
+            var target = {
+                x: 7,
+                y: 7,
+                trail: [],
+                cost: 0
+            };
+            var find_result = find_path(target, [get_node(0, 0, map)], map);
+            show_result(find_result);
+            $('.tile'+target.x+'-'+target.y).addClass('path');
+        }
+
+        var show_result = function (result) {
+            $('.col').removeClass('path');
+            for (var y = 0; y < map.length; y++) {
+                for (var x = 0; x < map[0].length; x++) {
+                    var found = false;
+                    for (var i = 0; i < result.trail.length; i++) {
+                        if (result.trail[i].x == x && result.trail[i].y == y) {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (found)
+                        $('.tile'+x+'-'+y).addClass('path');
+                }
+            }
+        };
+
+        window.onload = () => {
+            create_grid();
+        }
+    </script>
+    <style>
+
+        .col {
+            width: 50px;
+            height: 50px;
+            display: inline-block;
+            margin-top: -6px;
+        }
+
+        .selected {
+            border: 3px solid lightgreen;
+        }
+
+        .path {
+            border: 3px solid red !important;
+        }
+    </style>
+
+</body>
+</html>
