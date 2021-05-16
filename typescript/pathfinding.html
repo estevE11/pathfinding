@@ -17,20 +17,23 @@
 <body>
     <div class="grid"></div>
     <label for="customRange1" class="form-label">Cost</label>
-    <input type="range" class="form-range" id="cost_slider" min="0" max="100" onchange="slider_handler()" oninput="slider_handler()">
+    <input type="range" class="form-range" id="cost_slider" min="0" max="100" onchange="find" oninput="slider_handler()">
     <span id="cost_slider_val"></span>
+    <button onclick="print_grid()">print_grid</button>
     <br>
-    <button onclick="find()">FIND PATH</button>
     <script>
         let map = [
-            [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0]
+            [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
+            [10, 0, 11, 23, 29, 40, 50, 60, 70, 81, 90],
+            [20, 10, 0, 12, 18, 29, 41, 50, 61, 70, 80],
+            [30, 20, 19, 0, 10, 20, 30, 100, 50, 60, 70],
+            [40, 41, 22, 18, 0, 14, 20, 100, 41, 50, 60],
+            [50, 56, 100, 100, 100, 100, 100, 100, 31, 41, 50],
+            [60, 65, 59, 34, 26, 18, 0, 10, 20, 31, 40],
+            [70, 76, 65, 54, 29, 24, 14, 0, 10, 20, 30],
+            [80, 86, 77, 77, 49, 33, 21, 9, 0, 10, 20],
+            [90, 92, 83, 70, 58, 40, 32, 24, 12, 0, 10],
+            [100, 90, 80, 70, 60, 50, 40, 30, 20, 10, 0],
         ];
 
         let tile_selected = [0, 0];
@@ -46,6 +49,19 @@
                 grid += row;
             }
             $('.grid').html(grid);
+        }
+
+        const print_grid = () => {
+            let to_print = '';
+            for(let y = 0; y < map.length; y++) {
+                let row = '[';
+                for(let x = 0; x < map[0].length-1; x++) {
+                    row += map[y][x] + ', ';
+                }
+                row += map[y][map[y].length-1] + '],';
+                to_print += row + '\n';
+            }
+            console.log(to_print);
         }
 
         const edit_tile = (x, y, val) => {
@@ -70,8 +86,8 @@
 
         const find = () => {
             var target = {
-                x: 7,
-                y: 7,
+                x: 10,
+                y: 10,
                 trail: [],
                 cost: 0
             };
@@ -108,14 +124,15 @@
             height: 50px;
             display: inline-block;
             margin-top: -6px;
+            border: 1px solid black;
         }
 
         .selected {
-            border: 3px solid lightgreen;
+            border: 3px solid lightgreen !important;
         }
 
         .path {
-            border: 3px solid red !important;
+            border: 3px solid red ;
         }
     </style>
 
