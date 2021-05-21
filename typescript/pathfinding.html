@@ -19,7 +19,7 @@
     <label for="customRange1" class="form-label">Cost</label>
     <input type="range" class="form-range" id="cost_slider" min="0" max="100" onchange="find" oninput="slider_handler()">
     <span id="cost_slider_val"></span>
-    <button onclick="print_grid()">print_grid</button>
+    <!--<button onclick="print_grid()">print_grid</button>-->
     <br>
     <script>
         let map = [
@@ -115,6 +115,7 @@
 
         window.onload = () => {
             create_grid();
+            find();
         }
     </script>
     <style>

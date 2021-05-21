@@ -19,7 +19,7 @@ const get_node = (x: number, y: number, map: number[][]): MapNode => {
     return { x: x, y: y, cost: cost, trail: [] };
 }
 
-const get_neighbours = (parent_node: MapNode, map: number[][]): MapNode[] => {
+const get_neighbours = (parent_node: MapNode, map: number[][], target: MapNode): MapNode[] => {
     let res: MapNode[] = [];
     const x = parent_node.x;
     const y = parent_node.y;
@@ -30,7 +30,7 @@ const get_neighbours = (parent_node: MapNode, map: number[][]): MapNode[] => {
                 const nod = get_node(xx, yy, map);
                 if (nod != null) {
                     nod.trail = [...parent_node.trail, parent_node];
-                    nod.cost += parent_node.cost;
+                    nod.cost += parent_node.cost + calc_dist(nod, target);
                     res.push(nod);
                 }
             }
@@ -93,7 +93,7 @@ const find_path = (target: MapNode, list: MapNode[], map: number[][]): MapNode =
     let current = list[0];
     let visited: MapNode[] = [];
     while (!(current.x == target.x && current.y == target.y)) {
-        const curr_neighbours: MapNode[] = get_neighbours(current, map);
+        const curr_neighbours: MapNode[] = get_neighbours(current, map, target);
         list = delete_node_from_list(list, current);
         list = add_nodes_to_list(list, curr_neighbours, visited);
         list = sort_node_list(list);
@@ -119,6 +119,12 @@ const print_result = (result: MapNode, map: number[][]) => {
         }
         console.log(line);
     }
+}
+
+const calc_dist = (origin: MapNode, target: MapNode) => {
+    const dx = target.x - origin.x;
+    const dy = target.y - origin.y;
+    return Math.abs(Math.sqrt(dx*dx + dy*dy));
 }
 
 const target: MapNode = {

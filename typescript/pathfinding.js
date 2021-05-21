@@ -1,7 +1,9 @@
-var __spreadArray = (this && this.__spreadArray) || function (to, from) {
-    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
-        to[j] = from[i];
-    return to;
+var __spreadArrays = (this && this.__spreadArrays) || function () {
+    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
+    for (var r = Array(s), k = 0, i = 0; i < il; i++)
+        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+            r[k] = a[j];
+    return r;
 };
 ;
 var map_costs = [
@@ -17,7 +19,7 @@ var get_node = function (x, y, map) {
     var cost = map[y][x];
     return { x: x, y: y, cost: cost, trail: [] };
 };
-var get_neighbours = function (parent_node, map) {
+var get_neighbours = function (parent_node, map, target) {
     var res = [];
     var x = parent_node.x;
     var y = parent_node.y;
@@ -26,8 +28,8 @@ var get_neighbours = function (parent_node, map) {
             if (!(yy == y && xx == x)) {
                 var nod = get_node(xx, yy, map);
                 if (nod != null) {
-                    nod.trail = __spreadArray(__spreadArray([], parent_node.trail), [parent_node]);
-                    nod.cost += parent_node.cost;
+                    nod.trail = __spreadArrays(parent_node.trail, [parent_node]);
+                    nod.cost += parent_node.cost + calc_dist(nod, target);
                     res.push(nod);
                 }
             }
@@ -91,7 +93,7 @@ var find_path = function (target, list, map) {
     var current = list[0];
     var visited = [];
     while (!(current.x == target.x && current.y == target.y)) {
-        var curr_neighbours = get_neighbours(current, map);
+        var curr_neighbours = get_neighbours(current, map, target);
         list = delete_node_from_list(list, current);
         list = add_nodes_to_list(list, curr_neighbours, visited);
         list = sort_node_list(list);
@@ -118,6 +120,11 @@ var print_result = function (result, map) {
         }
         console.log(line);
     }
+};
+var calc_dist = function (origin, target) {
+    var dx = target.x - origin.x;
+    var dy = target.y - origin.y;
+    return Math.abs(Math.sqrt(dx * dx + dy * dy));
 };
 var target = {
     x: 4,
