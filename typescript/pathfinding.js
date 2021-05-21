@@ -17,6 +17,8 @@ var get_node = function (x, y, map) {
     if (x < 0 || x > map[0].length - 1 || y < 0 || y > map.length - 1)
         return null;
     var cost = map[y][x];
+    if (cost >= 100)
+        return null;
     return { x: x, y: y, cost: cost, trail: [] };
 };
 var get_neighbours = function (parent_node, map, target) {

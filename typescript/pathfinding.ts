@@ -16,6 +16,7 @@ const map_costs: number[][] = [
 const get_node = (x: number, y: number, map: number[][]): MapNode => {
     if (x < 0 || x > map[0].length-1 || y < 0 || y > map.length-1) return null;
     const cost = map[y][x];
+    if (cost >= 100) return null;
     return { x: x, y: y, cost: cost, trail: [] };
 }
 
